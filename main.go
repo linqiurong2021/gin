@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LoginForm 登录表单
+type LoginForm struct {
+	Username string `form:"username"` // 结构体字段需要大写  与表单字段绑定 from:"username"
+	Password string `form:"password"`
+}
+
 func main() {
 	r := gin.Default()
 	// 静态文件处理 页面中有/css会 转义为 ./static/css
@@ -84,5 +90,22 @@ func main() {
 			"age":      age,
 		})
 	})
+
+	r.GET("/should_bind", func(c *gin.Context) {
+		var loginForm LoginForm
+		err := c.ShouldBind(&loginForm) //支持post get
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err,
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"username": loginForm.Username,
+				"password": loginForm.Password,
+			})
+		}
+
+	})
+
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
