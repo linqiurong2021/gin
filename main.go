@@ -61,5 +61,20 @@ func main() {
 		})
 	})
 
+	r.GET("/post_form", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "post_form.tmpl", nil)
+	})
+
+	r.POST("/post_form", func(c *gin.Context) {
+		username := c.PostForm("username")
+		password := c.PostForm("password")
+
+		c.JSON(http.StatusOK, gin.H{
+			"code": 200,
+			"msg":  "success",
+			"data": username + "----" + password,
+		})
+	})
+
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
