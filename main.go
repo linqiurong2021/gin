@@ -52,5 +52,14 @@ func main() {
 		c.HTML(http.StatusOK, "services.html", nil)
 	})
 
+	r.GET("/query", func(c *gin.Context) {
+		name := c.Query("name")
+		age := c.DefaultQuery("age", "18")
+		c.JSON(http.StatusOK, gin.H{
+			"name": name,
+			"age":  age,
+		})
+	})
+
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
