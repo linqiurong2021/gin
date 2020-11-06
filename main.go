@@ -162,5 +162,22 @@ func main() {
 
 	})
 
+	// 重定向 GET
+	r.GET("/redirect", func(c *gin.Context) {
+		c.Redirect(http.StatusPermanentRedirect, "http://www.baidu.com/")
+	})
+
+	// 路由重定向
+	r.GET("/path", func(c *gin.Context) {
+		// 重定向路径
+		c.Request.URL.Path = "/redirect_result"
+		// 路由重定向，使用HandleContext
+		r.HandleContext(c)
+	})
+	// 重定向后的页面
+	r.GET("/redirect_result", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"hello": "redirect_result"})
+	})
+
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
