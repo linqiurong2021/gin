@@ -30,36 +30,48 @@ func main() {
 	r.LoadHTMLGlob("templates/**/*") // 其中 ** 代表目录
 	// r.LoadHTMLGlob("templates/home/*.html") //
 	// r.LoadHTMLFiles("templates/user/user_func.tmpl")
-	r.GET("/user", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Users website",
+
+	// 路由分组
+	userGroup := r.Group("/user")
+	{
+		// 这里可用空或/ 如果用/ 链接地址栏会自动添加 如果没有即使在链接地址栏加上了也会去掉
+		userGroup.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.tmpl", gin.H{
+				"title": "Users website",
+			})
 		})
-	})
-	// 模板函数 函数需要写在解析模板前
-	r.GET("/user/user_func", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "user_func.tmpl", gin.H{
-			"title": `<a href='http://www.baidu.com' target='_blank'>百度</a>`,
+		// 模板函数 函数需要写在解析模板前
+		userGroup.GET("/user_func", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "user_func.tmpl", gin.H{
+				"title": `<a href='http://www.baidu.com' target='_blank'>百度</a>`,
+			})
 		})
-	})
+	}
+
 	//
 	r.GET("/posts", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Posts website",
 		})
 	})
-	// 测试模板
-	r.GET("/home/index.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-	r.GET("/home/about.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "about.html", nil)
-	})
-	r.GET("/home/contact.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "contact.html", nil)
-	})
-	r.GET("/home/services.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "services.html", nil)
-	})
+
+	homeGroup := r.Group("/home")
+	{
+		// 测试模板
+		homeGroup.GET("/index.html", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", nil)
+		})
+		homeGroup.GET("/about.html", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "about.html", nil)
+		})
+		homeGroup.GET("/contact.html", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "contact.html", nil)
+		})
+		homeGroup.GET("/services.html", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "services.html", nil)
+		})
+	}
+
 	// Query 参数获取
 	r.GET("/query", func(c *gin.Context) {
 		name := c.Query("name")
@@ -177,6 +189,11 @@ func main() {
 	// 重定向后的页面
 	r.GET("/redirect_result", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"hello": "redirect_result"})
+	})
+	// 未匹配到路由时 404
+	r.NoRoute(func(c *gin.Context) {
+
+		c.HTML(http.StatusNotFound, "404.html", nil)
 	})
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
