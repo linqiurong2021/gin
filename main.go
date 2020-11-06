@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gin/middleware"
 	"html/template"
 	"net/http"
 	"os"
@@ -17,6 +18,8 @@ type LoginForm struct {
 
 func main() {
 	r := gin.Default()
+	// 全局注册中间件
+	r.Use(middleware.AuthCheck(false))
 	// 静态文件处理 页面中有/css会 转义为 ./static/css
 	// r.Static("/static", "./static")
 	r.Static("/assets", "./static/assets")
@@ -31,6 +34,16 @@ func main() {
 	// r.LoadHTMLGlob("templates/home/*.html") //
 	// r.LoadHTMLFiles("templates/user/user_func.tmpl")
 
+	// 路由组注册中间件法1:  userGroup.Use(middleware.AuthCheck(false))
+	// 路由组注册中间件法2:   r.Group("/user", middleware.AuthCheck(false))
+	/**
+	// 路由注册中间件:
+	r.GET("/posts", middleware.AuthCheck(false),func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "Posts website",
+		})
+	})
+	*/
 	// 路由分组
 	userGroup := r.Group("/user")
 	{
